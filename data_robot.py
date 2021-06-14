@@ -91,6 +91,7 @@ class Listener:
         for __file in ready:
             try:
                 os.remove(__file)
+                self.to_clean = [i for i in self.to_clean if i[0] != __file]
             except:
                 pass
     def scan(self):
