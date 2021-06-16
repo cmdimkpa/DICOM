@@ -7,6 +7,8 @@ import json
 app = Flask(__name__)
 CORS(app)
 
+MEM_CACHE = {}
+
 def responsify(status,message,data={}):
     code = int(status)
     a_dict = {"data":data,"message":message,"code":code}
@@ -24,7 +26,11 @@ def get_tables():
 @app.route('/table_data')
 def get_table_data():
     read_json_from_url = lambda url: eval(http.get(url).content.decode())
-    items = [read_json_from_url(url) for url in get_tables()]
+    items = []
+    for url in get_tables():
+        if url not in MEM_CACHE:
+            MEM_CACHE[url] = read_json_from_url(url)
+        items.append(MEM_CACHE[url])
     return responsify(200, 'OK', items)
 
 if __name__ == '__main__':
